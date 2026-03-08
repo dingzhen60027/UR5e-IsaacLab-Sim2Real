@@ -1,4 +1,4 @@
-# Copyright (c) 2022-2025, The Isaac Lab Project Developers (https://github.com/isaac-sim/IsaacLab/blob/main/CONTRIBUTORS.md).
+# Copyright (c) 2025-2026, The Isaac Lab Project Developers (https://github.com/isaac-sim/IsaacLab/blob/main/CONTRIBUTORS.md).
 # All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
@@ -9,30 +9,30 @@ from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlPpoActorCriticCfg, R
 
 
 @configclass
-class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
-    num_steps_per_env = 16
-    max_iterations = 150
+class URReachPPORunnerCfg(RslRlOnPolicyRunnerCfg):
+    num_steps_per_env = 512
+    max_iterations = 1500
     save_interval = 50
-    experiment_name = "cartpole_direct"
+    experiment_name = "reach_ur10e"
+    empirical_normalization = True
+    obs_groups = {"policy": ["policy"], "critic": ["policy"]}
     policy = RslRlPpoActorCriticCfg(
         init_noise_std=1.0,
-        actor_obs_normalization=False,
-        critic_obs_normalization=False,
-        actor_hidden_dims=[32, 32],
-        critic_hidden_dims=[32, 32],
+        actor_hidden_dims=[256, 128, 64],
+        critic_hidden_dims=[256, 128, 64],
         activation="elu",
     )
     algorithm = RslRlPpoAlgorithmCfg(
         value_loss_coef=1.0,
         use_clipped_value_loss=True,
         clip_param=0.2,
-        entropy_coef=0.005,
-        num_learning_epochs=5,
-        num_mini_batches=4,
-        learning_rate=1.0e-3,
+        entropy_coef=0.0,
+        num_learning_epochs=8,
+        num_mini_batches=8,
+        learning_rate=5.0e-4,
         schedule="adaptive",
         gamma=0.99,
         lam=0.95,
-        desired_kl=0.01,
+        desired_kl=0.008,
         max_grad_norm=1.0,
     )

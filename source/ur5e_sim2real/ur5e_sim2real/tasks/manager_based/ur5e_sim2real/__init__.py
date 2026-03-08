@@ -13,14 +13,11 @@ from . import agents
 
 
 gym.register(
-    id="Template-Ur5e-Sim2real-v0",
+    id="Isaac-Ur5e-Sim2real-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     disable_env_checker=True,
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.ur5e_sim2real_env_cfg:Ur5eSim2realEnvCfg",
-        "rl_games_cfg_entry_point": f"{agents.__name__}:rl_games_ppo_cfg.yaml",
-        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:PPORunnerCfg",
-        "skrl_cfg_entry_point": f"{agents.__name__}:skrl_ppo_cfg.yaml",
-        "sb3_cfg_entry_point": f"{agents.__name__}:sb3_ppo_cfg.yaml",
+        "env_cfg_entry_point": f"{__name__}.ur5e_sim2real_env_cfg:UR10eReachEnvCfg",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:URReachPPORunnerCfg",
     },
 )
