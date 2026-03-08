@@ -16,7 +16,7 @@ from isaaclab_tasks.manager_based.manipulation.deploy.reach.reach_env_cfg import
 ##
 # Pre-defined configs
 ##
-from isaaclab_assets import UR10e_CFG  # isort: skip
+from .robot import UR5e_CFG  # isort: skip
 
 
 ##
@@ -25,7 +25,7 @@ from isaaclab_assets import UR10e_CFG  # isort: skip
 
 
 @configclass
-class UR10eReachEnvCfg(ReachEnvCfg):
+class UR5eReachEnvCfg(ReachEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
@@ -38,7 +38,7 @@ class UR10eReachEnvCfg(ReachEnvCfg):
         self.events.joint_friction.params["asset_cfg"].joint_names = ["shoulder_.*", "elbow_.*", "wrist_.*"]
 
         # switch robot to ur10e
-        self.scene.robot = UR10e_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.robot = UR5e_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
 
         # The real UR10e robots polyscore software uses the "base" frame for reference
         # But the USD model and UR10e ROS interface uses the "base_link" frame
@@ -101,7 +101,7 @@ class UR10eReachEnvCfg(ReachEnvCfg):
 
 
 @configclass
-class UR10eReachEnvCfg_PLAY(UR10eReachEnvCfg):
+class UR10eReachEnvCfg_PLAY(UR5eReachEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
