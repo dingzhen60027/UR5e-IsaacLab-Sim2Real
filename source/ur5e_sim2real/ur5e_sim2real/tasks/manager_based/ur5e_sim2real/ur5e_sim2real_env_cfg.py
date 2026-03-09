@@ -37,14 +37,14 @@ class UR5eReachEnvCfg(ReachEnvCfg):
         ]
         self.events.joint_friction.params["asset_cfg"].joint_names = ["shoulder_.*", "elbow_.*", "wrist_.*"]
 
-        # switch robot to ur10e
+        # switch robot to ur5e
         self.scene.robot = UR5e_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
 
-        # The real UR10e robots polyscore software uses the "base" frame for reference
-        # But the USD model and UR10e ROS interface uses the "base_link" frame
+        # The real UR5e robot PolyScope software uses the "base" frame for reference
+        # But the USD model and UR5e ROS interface use the "base_link" frame
         # We are training this policy to track the end-effector pose in the "base" frame
-        # The base frame is 180 offset from the base_link frame
-        # And hence the source_frame_offset is set to 180 degrees around the z-axis
+        # The base frame is 180 degrees offset from the base_link frame
+        # And hence the source_frame_offset is set accordingly
         self.rewards.end_effector_keypoint_tracking.params["asset_cfg"] = SceneEntityCfg("ee_frame_wrt_base_frame")
         self.rewards.end_effector_keypoint_tracking_exp.params["asset_cfg"] = SceneEntityCfg("ee_frame_wrt_base_frame")
         self.scene.ee_frame_wrt_base_frame = FrameTransformerCfg(
@@ -58,18 +58,22 @@ class UR5eReachEnvCfg(ReachEnvCfg):
                 ),
             ],
         )
-        # Disable visualization for the goal pose because the commands are generated wrt to the base frame
-        # But the visualization will visualizing it wrt to the base_link frame
+
+        # Disable visualization for the goal pose because the commands are generated wrt the base frame
+        # But the visualization would display it wrt the base_link frame
         self.commands.ee_pose.debug_vis = False
 
         # Incremental joint position action configuration
         self.actions.arm_action = mdp.RelativeJointPositionActionCfg(
             asset_name="robot", joint_names=[".*"], scale=0.0625, use_zero_offset=True
         )
-        # override command generator body
+
+        # Override command generator body
         # end-effector is along x-direction
-        self.target_pos_centre = (0.8875, -0.225, 0.2)
-        self.target_pos_range = (0.25, 0.125, 0.1)
+        # Adjusted target range for UR5e workspace
+        self.target_pos_centre = (0.58, -0.18, 0.22)
+        self.target_pos_range = (0.14, 0.12, 0.10)
+
         self.commands.ee_pose.body_name = "wrist_3_link"
         self.commands.ee_pose.ranges.pos_x = (
             self.target_pos_centre[0] - self.target_pos_range[0],
@@ -84,8 +88,10 @@ class UR5eReachEnvCfg(ReachEnvCfg):
             self.target_pos_centre[2] + self.target_pos_range[2],
         )
 
-        self.target_rot_centre = (math.pi, 0.0, -math.pi / 2)  # end-effector facing down
-        self.target_rot_range = (math.pi / 6, math.pi / 6, math.pi * 2 / 3)
+        # End-effector facing down
+        self.target_rot_centre = (math.pi, 0.0, -math.pi / 2)
+        self.target_rot_range = (math.pi / 8, math.pi / 8, math.pi / 3)
+
         self.commands.ee_pose.ranges.roll = (
             self.target_rot_centre[0] - self.target_rot_range[0],
             self.target_rot_centre[0] + self.target_rot_range[0],
@@ -101,7 +107,7 @@ class UR5eReachEnvCfg(ReachEnvCfg):
 
 
 @configclass
-class UR10eReachEnvCfg_PLAY(UR5eReachEnvCfg):
+class UR5eReachEnvCfg_PLAY(UR5eReachEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
