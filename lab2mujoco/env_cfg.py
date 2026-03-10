@@ -7,7 +7,7 @@ from scipy.spatial.transform import Rotation as R
 # 导入自定义模块
 from robot.ur5e import RobotCfg, MujocoRobot
 from mdp.obs import ObsCfg, build_policy_obs
-from mdp.policy import TorchScriptPolicy, PolicyCfg 
+from mdp.policy import TorchScriptPolicy, PolicyCfg, OnnxPolicy
 
 # ROS 2 相关导入
 import rclpy
@@ -66,7 +66,7 @@ class CommandGenerator:
         self.current_command = np.zeros(7)
 
     def update(self, sim_time):
-        if sim_time - self.last_resample_time >= 4.0:
+        if sim_time - self.last_resample_time >= 2.0:
             pos = self.pos_centre + np.random.uniform(-self.pos_range, self.pos_range)
             rot_euler = self.rot_centre + np.random.uniform(-self.rot_range, self.rot_range)
             r = R.from_euler('xyz', rot_euler)
@@ -92,7 +92,7 @@ def run_simulation():
     # 实例化 ROS 2 节点
     ros_node = JointStatePublisher(robot_cfg.joint_names)
     
-    action_scale = 0.0622
+    action_scale = 0.0625
     robot.model.opt.timestep = 1.0 / 120.0
 
     with mujoco.viewer.launch_passive(robot.model, robot.data) as viewer:
